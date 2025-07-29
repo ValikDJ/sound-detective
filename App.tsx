@@ -156,7 +156,7 @@ const App: React.FC = () => {
         answers={answers}
         onUpdateAnswer={handleUpdateAnswer}
         onDownload={checkAnswersBeforeDownload}
-        isTutorialActive={showTutorial} {/* Передаємо стан showTutorial */}
+        isTutorialActive={showTutorial} 
       />
 
       <ConfirmationModal 
