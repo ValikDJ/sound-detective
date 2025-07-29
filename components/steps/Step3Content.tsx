@@ -1,34 +1,116 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Answers } from '../../types';
+import { Play, Pause } from 'lucide-react'; // Імпортуємо іконки
 
 interface Step3ContentProps {
   answers: Answers;
   onUpdateAnswer: (questionId: string, value: string) => void;
   onDownload: () => void;
+  isTutorialActive: boolean; // Додано новий пропс
 }
 
-const AnswerItem: React.FC<{
+interface AnswerItemProps {
   qId: string;
   label: string;
   placeholder: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   isTextarea?: boolean;
-}> = ({ qId, label, placeholder, value, onChange, isTextarea }) => (
-  <div className="bg-gray-700 p-4 mb-4 border-l-4 border-blue-600">
-    <div className="flex items-center mb-3">
-      <input type="checkbox" id={`check_${qId}`} className="w-5 h-5 mr-3 cursor-pointer accent-purple-500" />
-      <label htmlFor={qId} className="font-bold text-gray-300 cursor-pointer">{label}</label>
-    </div>
-    {isTextarea ? (
-      <textarea id={qId} placeholder={placeholder} value={value} onChange={onChange} className="w-full bg-gray-900 border-2 border-gray-600 text-white p-2.5 font-sans text-base min-h-[80px] resize-y focus:border-purple-500 focus:ring-purple-500 outline-none" />
-    ) : (
-      <input type="text" id={qId} placeholder={placeholder} value={value} onChange={onChange} className="w-full bg-gray-900 border-2 border-gray-600 text-white p-2.5 font-sans text-base focus:border-purple-500 focus:ring-purple-500 outline-none" />
-    )}
-  </div>
-);
+  audioSrc: string; // Шлях до аудіофайлу
+  isTutorialActive: boolean; // Пропс для контролю відтворення під час туторіалу
+}
 
-const Step3Content: React.FC<Step3ContentProps> = ({ answers, onUpdateAnswer, onDownload }) => {
+const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value, onChange, isTextarea, audioSrc, isTutorialActive }) => {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const localStorageKey = `question_audio_played_${qId}`;
+
+  useEffect(() => {
+    const handleEnded = () => setIsPlaying(false);
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    const currentAudio = audioRef.current;
+    if (currentAudio) {
+      currentAudio.addEventListener('ended', handleEnded);
+      currentAudio.addEventListener('play', handlePlay);
+      currentAudio.addEventListener('pause', handlePause);
+    }
+
+    return () => {
+      if (currentAudio) {
+        currentAudio.removeEventListener('ended', handleEnded);
+        currentAudio.removeEventListener('play', handlePlay);
+        currentAudio.removeEventListener('pause', handlePause);
+        currentAudio.pause(); // Зупиняємо аудіо при розмонтуванні компонента
+        currentAudio.currentTime = 0;
+      }
+    };
+  }, [audioSrc]); // Перезапускаємо ефект, якщо змінюється джерело аудіо
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(error => {
+          console.error(`Error playing audio for ${qId}:`, error);
+        });
+      }
+    }
+  };
+
+  const handleInputFocus = () => {
+    if (audioRef.current && !isTutorialActive) {
+      const hasPlayed = localStorage.getItem(localStorageKey) === 'true';
+      if (!hasPlayed) {
+        audioRef.current.play().then(() => {
+          localStorage.setItem(localStorageKey, 'true');
+        }).catch(error => {
+          console.warn(`Autoplay prevented for ${qId}:`, error);
+        });
+      }
+    }
+  };
+
+  return (
+    <div className="bg-gray-700 p-4 mb-4 border-l-4 border-blue-600">
+      <div className="flex items-center mb-3">
+        <button
+          onClick={togglePlayPause}
+          className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors duration-200 mr-3 flex-shrink-0"
+          aria-label={isPlaying ? "Пауза" : "Відтворити"}
+        >
+          {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+        </button>
+        <label htmlFor={qId} className="font-bold text-gray-300 cursor-pointer flex-grow">{label}</label>
+      </div>
+      {isTextarea ? (
+        <textarea
+          id={qId}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onFocus={handleInputFocus} // Відтворення аудіо при фокусі
+          className="w-full bg-gray-900 border-2 border-gray-600 text-white p-2.5 font-sans text-base min-h-[80px] resize-y focus:border-purple-500 focus:ring-purple-500 outline-none"
+        />
+      ) : (
+        <input
+          type="text"
+          id={qId}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onFocus={handleInputFocus} // Відтворення аудіо при фокусі
+          className="w-full bg-gray-900 border-2 border-gray-600 text-white p-2.5 font-sans text-base focus:border-purple-500 focus:ring-purple-500 outline-none"
+        />
+      )}
+      <audio ref={audioRef} src={audioSrc} preload="auto" />
+    </div>
+  );
+};
+
+const Step3Content: React.FC<Step3ContentProps> = ({ answers, onUpdateAnswer, onDownload, isTutorialActive }) => {
   const [showHint, setShowHint] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -58,11 +140,11 @@ const Step3Content: React.FC<Step3ContentProps> = ({ answers, onUpdateAnswer, on
       )}
 
       <div className="mt-5">
-        <AnswerItem qId="q1" label="1. 📝 Вкажи назву мультфільму та посилання (якщо є):" placeholder="Наприклад: Мультфільм про смішного кота" value={answers.q1} onChange={handleChange} />
-        <AnswerItem qId="q2" label="2. 🔊 Які звуки ти почув? (перелічи якомога більше)" placeholder="Наприклад: сміх, кроки, музика, спів пташок, шум вітру..." value={answers.q2} onChange={handleChange} isTextarea />
-        <AnswerItem qId="q3" label="3. 😊 Які емоції викликали ці звуки?" placeholder="Наприклад: мені було весело, коли..., або трохи сумно, тому що..." value={answers.q3} onChange={handleChange} />
-        <AnswerItem qId="q4" label="4. 📖 Як звуки допомагали зрозуміти, що відбувається?" placeholder="Наприклад: гучна музика означала, що зараз щось станеться..." value={answers.q4} onChange={handleChange} isTextarea />
-        <AnswerItem qId="q5" label="5. ⭐ Який звук тобі сподобався найбільше і чому?" placeholder="Наприклад: звук дощу, бо він мене заспокоює." value={answers.q5} onChange={handleChange} isTextarea />
+        <AnswerItem qId="q1" label="1. 📝 Вкажи назву мультфільму та посилання (якщо є):" placeholder="Наприклад: Мультфільм про смішного кота" value={answers.q1} onChange={handleChange} audioSrc="/audio/question_1.mp3" isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q2" label="2. 🔊 Які звуки ти почув? (перелічи якомога більше)" placeholder="Наприклад: сміх, кроки, музика, спів пташок, шум вітру..." value={answers.q2} onChange={handleChange} isTextarea audioSrc="/audio/question_2.mp3" isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q3" label="3. 😊 Які емоції викликали ці звуки?" placeholder="Наприклад: мені було весело, коли..., або трохи сумно, тому що..." value={answers.q3} onChange={handleChange} audioSrc="/audio/question_3.mp3" isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q4" label="4. 📖 Як звуки допомагали зрозуміти, що відбувається?" placeholder="Наприклад: гучна музика означала, що зараз щось станеться..." value={answers.q4} onChange={handleChange} isTextarea audioSrc="/audio/question_4.mp3" isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q5" label="5. ⭐ Який звук тобі сподобався найбільше і чому?" placeholder="Наприклад: звук дощу, бо він мене заспокоює." value={answers.q5} onChange={handleChange} isTextarea audioSrc="/audio/question_5.mp3" isTutorialActive={isTutorialActive} />
       </div>
 
       <button

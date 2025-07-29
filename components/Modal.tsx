@@ -41,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({ activeStep, onClose, onNavigate, answers,
     switch (activeStep) {
       case 1: return <Step1Content />;
       case 2: return <Step2Content />;
-      case 3: return <Step3Content answers={answers} onUpdateAnswer={onUpdateAnswer} onDownload={onDownload} />;
+      case 3: return <Step3Content answers={answers} onUpdateAnswer={onUpdateAnswer} onDownload={onDownload} isTutorialActive={isTutorialActive} />;
       case 4: return <Step4Content />;
       default: return null;
     }
