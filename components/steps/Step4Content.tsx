@@ -1,5 +1,4 @@
 import React from 'react';
-import AudioPlayer from '../AudioPlayer';
 
 const Step4Content: React.FC = () => {
   return (
@@ -7,7 +6,6 @@ const Step4Content: React.FC = () => {
       <p className="text-lg leading-relaxed text-gray-400 mb-5 border-l-4 border-purple-600 pl-4">
         Ти майже біля мети! Залишився останній крок. Тепер тобі потрібно завантажити файл <strong>sound-detective-answers.txt</strong>, який ти зберіг, на платформу Logika.
       </p>
-      <AudioPlayer src="/audio/krok4.mp3" localStorageKey="krok4_audio_played_auto" title="Аудіо для Кроку 4" />
       <div className="bg-gray-700 border-2 border-blue-600 p-5 mt-5 text-center">
         <p>Завантаж свій файл у розділ:</p>
         <p className="font-bold text-yellow-400 mt-2">

@@ -5,9 +5,10 @@ interface AudioPlayerProps {
   src: string;
   localStorageKey: string;
   title: string;
+  isSmallAndCentered?: boolean; // Новий пропс
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, isSmallAndCentered = false }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -17,13 +18,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title }
     if (!hasPlayedAutomatically && audioRef.current) {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
-        // Set localStorage only on successful play to ensure it truly played
         localStorage.setItem(localStorageKey, 'true');
       }).catch(error => {
         console.warn(`Autoplay prevented for ${src}:`, error);
         setIsPlaying(false);
-        // Even if autoplay is prevented, mark it as attempted for this session
-        // so it doesn't try again automatically on subsequent openings.
         localStorage.setItem(localStorageKey, 'true'); 
       });
     }
@@ -61,6 +59,22 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title }
       }
     }
   };
+
+  // Якщо isSmallAndCentered, рендеримо лише кнопку
+  if (isSmallAndCentered) {
+    return (
+      <div className="flex justify-center items-center">
+        <button
+          onClick={togglePlayPause}
+          className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors duration-200"
+          aria-label={isPlaying ? "Пауза" : "Відтворити"}
+        >
+          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+        </button>
+        <audio ref={audioRef} src={src} preload="auto" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-4 bg-gray-700 p-4 rounded-md border border-gray-600 mt-5">
