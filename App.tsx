@@ -12,7 +12,7 @@ import CompletionModal from './components/CompletionModal';
 
 const App: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
-  const [completedSteps, setCompletedSteps] = new Set());
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [answers, setAnswers] = useState<Answers>({
     q1: '', q2: '', q3: '', q4: '', q5: ''
   });

@@ -23,7 +23,6 @@ interface AnswerItemProps {
 const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value, onChange, isTextarea, audioSrc, isTutorialActive }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   const localStorageKey = `question_audio_played_${qId}`;
 
   useEffect(() => {
@@ -32,19 +31,14 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
     const handleEnded = () => setIsPlaying(false);
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleCanPlayThrough = () => {
-      setIsReady(true);
-    };
 
     if (currentAudio) {
       currentAudio.addEventListener('ended', handleEnded);
       currentAudio.addEventListener('play', handlePlay);
       currentAudio.addEventListener('pause', handlePause);
-      currentAudio.addEventListener('canplaythrough', handleCanPlayThrough);
       
       // Reset state when audioSrc changes
       setIsPlaying(false);
-      setIsReady(false);
       currentAudio.load(); // Explicitly load the new source
     }
 
@@ -53,7 +47,6 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
         currentAudio.removeEventListener('ended', handleEnded);
         currentAudio.removeEventListener('play', handlePlay);
         currentAudio.removeEventListener('pause', handlePause);
-        currentAudio.removeEventListener('canplaythrough', handleCanPlayThrough);
         currentAudio.pause();
         currentAudio.currentTime = 0;
       }
