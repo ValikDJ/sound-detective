@@ -12,7 +12,7 @@ import CompletionModal from './components/CompletionModal';
 
 const App: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [completedSteps, setCompletedSteps] = new Set());
   const [answers, setAnswers] = useState<Answers>({
     q1: '', q2: '', q3: '', q4: '', q5: ''
   });
@@ -36,6 +36,20 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Play intro audio once
+    const introAudioPlayed = localStorage.getItem('introAudioPlayed');
+    if (!introAudioPlayed) {
+      const audio = new Audio('/audio/intro.mp3');
+      audio.play()
+        .then(() => {
+          localStorage.setItem('introAudioPlayed', 'true');
+        })
+        .catch(error => {
+          console.warn("Autoplay of intro audio prevented:", error);
+          // If autoplay is prevented, you might want to offer a button to play it
+        });
+    }
+
     if (!localStorage.getItem('tutorialSeen')) {
       setTimeout(() => startTutorial(), 500);
     }
