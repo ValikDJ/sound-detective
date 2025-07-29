@@ -8,7 +8,7 @@ import Modal from './components/Modal';
 import ConfirmationModal from './components/ConfirmationModal';
 import Tutorial from './components/Tutorial';
 import HelpButton from './components/HelpButton';
-import CompletionModal from './components/CompletionModal'; // Додано імпорт
+import CompletionModal from './components/CompletionModal';
 
 const App: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
@@ -21,14 +21,14 @@ const App: React.FC = () => {
 
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStepIndex, setTutorialStepIndex] = useState(0);
-  const [showCompletionModal, setShowCompletionModal] = useState(false); // Новий стан для модального вікна завершення
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setActiveStep(null);
         setShowConfirmation(false);
-        setShowCompletionModal(false); // Додано закриття модального вікна завершення
+        setShowCompletionModal(false);
       }
     };
     window.addEventListener('keydown', handleEsc);
@@ -92,7 +92,6 @@ const App: React.FC = () => {
     link.click();
     document.body.removeChild(link);
     
-    // Замість alert, показуємо нове модальне вікно завершення
     setShowConfirmation(false);
     setShowCompletionModal(true);
   };
@@ -157,6 +156,7 @@ const App: React.FC = () => {
         answers={answers}
         onUpdateAnswer={handleUpdateAnswer}
         onDownload={checkAnswersBeforeDownload}
+        isTutorialActive={showTutorial} {/* Передаємо стан showTutorial */}
       />
 
       <ConfirmationModal 

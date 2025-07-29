@@ -4,7 +4,7 @@ import Step1Content from './steps/Step1Content';
 import Step2Content from './steps/Step2Content';
 import Step3Content from './steps/Step3Content';
 import Step4Content from './steps/Step4Content';
-import AudioPlayer from './AudioPlayer'; // Імпорт AudioPlayer
+import AudioPlayer from './AudioPlayer';
 
 interface ModalProps {
   activeStep: number | null;
@@ -13,16 +13,16 @@ interface ModalProps {
   answers: Answers;
   onUpdateAnswer: (questionId: string, value: string) => void;
   onDownload: () => void;
+  isTutorialActive: boolean; // Додано новий пропс
 }
 
 const STEPS_CONFIG = [
   { id: 1, title: "📺 Крок 1: Перегляд", component: <Step1Content /> },
   { id: 2, title: "👂 Крок 2: Прослуховування", component: <Step2Content /> },
-  { id: 3, title: "✍️ Крок 3: Анкета детектива" }, // Component handled separately
+  { id: 3, title: "✍️ Крок 3: Анкета детектива" },
   { id: 4, title: "📤 Крок 4: Завантаження звіту", component: <Step4Content /> }
 ];
 
-// Конфігурація аудіо для кожного кроку
 const AUDIO_CONFIG: { [key: number]: { src: string; localStorageKey: string; title: string } } = {
   1: { src: "/audio/krok1.mp3", localStorageKey: "krok1_audio_played_auto", title: "Аудіо для Кроку 1" },
   2: { src: "/audio/krok2.mp3", localStorageKey: "krok2_audio_played_auto", title: "Аудіо для Кроку 2" },
@@ -30,12 +30,12 @@ const AUDIO_CONFIG: { [key: number]: { src: string; localStorageKey: string; tit
   4: { src: "/audio/krok4.mp3", localStorageKey: "krok4_audio_played_auto", title: "Аудіо для Кроку 4" },
 };
 
-const Modal: React.FC<ModalProps> = ({ activeStep, onClose, onNavigate, answers, onUpdateAnswer, onDownload }) => {
+const Modal: React.FC<ModalProps> = ({ activeStep, onClose, onNavigate, answers, onUpdateAnswer, onDownload, isTutorialActive }) => {
   if (activeStep === null) return null;
 
   const currentStepConfig = STEPS_CONFIG.find(s => s.id === activeStep);
   const title = currentStepConfig?.title || '';
-  const currentAudio = AUDIO_CONFIG[activeStep]; // Отримуємо конфігурацію аудіо для поточного кроку
+  const currentAudio = AUDIO_CONFIG[activeStep];
 
   const renderContent = () => {
     switch (activeStep) {
@@ -71,7 +71,7 @@ const Modal: React.FC<ModalProps> = ({ activeStep, onClose, onNavigate, answers,
           {renderContent()}
         </div>
 
-        <div className="p-4 bg-gray-700 flex justify-between items-center flex-shrink-0"> {/* Додано items-center для вертикального вирівнювання */}
+        <div className="p-4 bg-gray-700 flex justify-between items-center flex-shrink-0">
           <button 
             onClick={() => onNavigate(activeStep - 1)} 
             disabled={activeStep === 1}
@@ -79,12 +79,13 @@ const Modal: React.FC<ModalProps> = ({ activeStep, onClose, onNavigate, answers,
           >
             Назад
           </button>
-          {currentAudio && ( // Рендеримо AudioPlayer, якщо є конфігурація для поточного кроку
+          {currentAudio && (
             <AudioPlayer
               src={currentAudio.src}
               localStorageKey={currentAudio.localStorageKey}
               title={currentAudio.title}
-              isSmallAndCentered={true} // Встановлюємо пропс для маленької кнопки
+              isSmallAndCentered={true}
+              isTutorialActive={isTutorialActive} {/* Передаємо isTutorialActive */}
             />
           )}
           <button 

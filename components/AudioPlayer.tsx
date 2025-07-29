@@ -6,32 +6,35 @@ interface AudioPlayerProps {
   localStorageKey: string;
   title: string;
   isSmallAndCentered?: boolean;
+  isTutorialActive?: boolean; // Додано новий пропс
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, isSmallAndCentered = false }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, isSmallAndCentered = false, isTutorialActive = false }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const hasPlayedAutomatically = localStorage.getItem(localStorageKey) === 'true';
-    console.log(`AudioPlayer: ${title} - hasPlayedAutomatically: ${hasPlayedAutomatically}`);
+    console.log(`AudioPlayer: ${title} - hasPlayedAutomatically: ${hasPlayedAutomatically}, isTutorialActive: ${isTutorialActive}`);
 
-    if (!hasPlayedAutomatically && audioRef.current) {
-      console.log(`AudioPlayer: Attempting to play ${src}`);
+    // Автоматичне відтворення лише якщо не відтворювалося раніше І туторіал неактивний
+    if (!hasPlayedAutomatically && audioRef.current && !isTutorialActive) {
+      console.log(`AudioPlayer: Attempting to play ${src} automatically.`);
       // Додаємо невелику затримку, щоб браузер краще розпізнав жест користувача
       setTimeout(() => {
-        if (audioRef.current) { // Перевіряємо ref ще раз, оскільки компонент міг бути розмонтований
+        if (audioRef.current) {
           audioRef.current.play().then(() => {
             setIsPlaying(true);
-            localStorage.setItem(localStorageKey, 'true'); // Встановлюємо прапорець тільки при успішному відтворенні
-            console.log(`AudioPlayer: Successfully played ${src}`);
+            localStorage.setItem(localStorageKey, 'true');
+            console.log(`AudioPlayer: Successfully played ${src} automatically.`);
           }).catch(error => {
             console.warn(`AudioPlayer: Autoplay prevented for ${src}:`, error);
             setIsPlaying(false);
-            // Не встановлюємо прапорець у localStorage, якщо відтворення було заблоковано
           });
         }
-      }, 0); // Затримка в 0 мс, щоб відкласти виконання до наступного циклу подій
+      }, 0);
+    } else if (isTutorialActive) {
+      console.log(`AudioPlayer: Autoplay skipped for ${src} because tutorial is active.`);
     }
 
     const handleEnded = () => setIsPlaying(false);
@@ -51,10 +54,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
         currentAudio.removeEventListener('play', handlePlay);
         currentAudio.removeEventListener('pause', handlePause);
         currentAudio.pause();
-        currentAudio.currentTime = 0; // Reset audio to start
+        currentAudio.currentTime = 0;
       }
     };
-  }, [src, localStorageKey, title]); // Додано title до залежностей для логування
+  }, [src, localStorageKey, title, isTutorialActive]); // Додано isTutorialActive до залежностей
 
   const togglePlayPause = () => {
     if (audioRef.current) {
