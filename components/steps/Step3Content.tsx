@@ -131,7 +131,9 @@ const Step3Content: React.FC<Step3ContentProps> = ({ answers, onUpdateAnswer, on
 
   return (
     <div>
-      {/* GIF-зображення видалено звідси */}
+      <div className="flex justify-center mb-6">
+        <img src="/ezgif-114884ef5a0190.gif" alt="Keep going" className="w-16 h-auto rounded-lg shadow-lg" />
+      </div>
       <p className="text-lg leading-relaxed text-gray-400 mb-5 border-l-4 border-purple-600 pl-4">
         Чудова робота! Ти зібрав усі докази. Тепер час заповнити звіт детектива. Дай відповіді на питання нижче, щоб описати мультик, який ти "почув".
       </p>
