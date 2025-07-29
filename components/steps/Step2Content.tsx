@@ -3,6 +3,9 @@ import React from 'react';
 const Step2Content: React.FC = () => {
   return (
     <div>
+      <div className="flex justify-center mb-6">
+        <img src="/ezgif-1e9909d7f22738.gif" alt="Listening" className="w-16 h-auto rounded-lg shadow-lg" />
+      </div>
       <p className="text-lg leading-relaxed text-gray-400 mb-5 border-l-4 border-purple-600 pl-4">
         Тепер починається робота справжнього детектива! Подивись той самий мультик ще раз, але цього разу закрий очі та уважно слухай. Твоє завдання — почути якомога більше різних звуків.
       </p>
