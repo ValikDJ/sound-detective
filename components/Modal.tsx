@@ -5,7 +5,7 @@ import Step2Content from './steps/Step2Content';
 import Step3Content from './steps/Step3Content';
 import Step4Content from './steps/Step4Content';
 import AudioPlayer from './AudioPlayer';
-import { getAssetPath } from '../utils/assetPath'; // Імпортуємо утиліту
+import { getAssetPath } from '@utils/assetPath'; // Імпортуємо утиліту через псевдонім
 
 interface ModalProps {
   activeStep: number | null;

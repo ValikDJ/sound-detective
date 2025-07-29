@@ -9,7 +9,7 @@ import ConfirmationModal from './components/ConfirmationModal';
 import Tutorial from './components/Tutorial';
 import HelpButton from './components/HelpButton';
 import CompletionModal from './components/CompletionModal';
-import { getAssetPath } from './utils/assetPath'; // Імпортуємо утиліту
+import { getAssetPath } from '@utils/assetPath'; // Імпортуємо утиліту через псевдонім
 
 const App: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Answers } from '../../types';
 import { Play, Pause } from 'lucide-react';
-import { getAssetPath } from '../../utils/assetPath'; // Імпортуємо утиліту
+import { getAssetPath } from '@utils/assetPath'; // Імпортуємо утиліту через псевдонім
 
 interface Step3ContentProps {
   answers: Answers;

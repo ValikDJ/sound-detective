@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAssetPath } from '../../utils/assetPath'; // Імпортуємо утиліту
+import { getAssetPath } from '@utils/assetPath'; // Імпортуємо утиліту через псевдонім
 
 const Step4Content: React.FC = () => {
   return (
