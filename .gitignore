@@ -7,16 +7,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Diagnostic reports (https://nodejs.org/api/report.html)
+.report/
+
+# Node.js
+# dependencies
+/node_modules
+
+# production
+# /dist  <-- Цей рядок закоментовано, щоб папка dist включалася в репозиторій для GitHub Pages
+# comment above line if you want to commit production build files
+# .vitepress/dist
+
+# misc
+.DS_Store
+.env.local
+.env.*.local
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+
+# local env files
+.env.local
+.env.*.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
-.DS_Store
+.vscode
 *.suo
 *.ntvs*
 *.njsproj
