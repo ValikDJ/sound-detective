@@ -5,7 +5,7 @@ interface AudioPlayerProps {
   src: string;
   localStorageKey: string;
   title: string;
-  isSmallAndCentered?: boolean; // Новий пропс
+  isSmallAndCentered?: boolean;
 }
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, isSmallAndCentered = false }) => {
@@ -18,11 +18,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
     if (!hasPlayedAutomatically && audioRef.current) {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
-        localStorage.setItem(localStorageKey, 'true');
+        localStorage.setItem(localStorageKey, 'true'); // Встановлюємо прапорець тільки при успішному відтворенні
       }).catch(error => {
         console.warn(`Autoplay prevented for ${src}:`, error);
         setIsPlaying(false);
-        localStorage.setItem(localStorageKey, 'true'); 
+        // Не встановлюємо прапорець у localStorage, якщо відтворення було заблоковано
       });
     }
 
@@ -60,7 +60,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
     }
   };
 
-  // Якщо isSmallAndCentered, рендеримо лише кнопку
   if (isSmallAndCentered) {
     return (
       <div className="flex justify-center items-center">
