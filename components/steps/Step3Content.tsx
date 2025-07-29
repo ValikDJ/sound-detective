@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Answers } from '../../types';
-import { Play, Pause } from 'lucide-react'; // Імпортуємо іконки
+import { Play, Pause } from 'lucide-react';
 
 interface Step3ContentProps {
   answers: Answers;
   onUpdateAnswer: (questionId: string, value: string) => void;
   onDownload: () => void;
-  isTutorialActive: boolean; // Додано новий пропс
+  isTutorialActive: boolean;
 }
 
 interface AnswerItemProps {
@@ -16,14 +16,14 @@ interface AnswerItemProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   isTextarea?: boolean;
-  audioSrc: string; // Шлях до аудіофайлу
-  isTutorialActive: boolean; // Пропс для контролю відтворення під час туторіалу
+  audioSrc: string;
+  isTutorialActive: boolean;
 }
 
 const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value, onChange, isTextarea, audioSrc, isTutorialActive }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isReady, setIsReady] = useState(false); // Новий стан для аудіо в AnswerItem
+  const [isReady, setIsReady] = useState(false);
   const localStorageKey = `question_audio_played_${qId}`;
 
   useEffect(() => {
@@ -33,14 +33,19 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
     const handleCanPlayThrough = () => {
-      setIsReady(true); // Аудіо готове до відтворення
+      setIsReady(true);
     };
 
     if (currentAudio) {
       currentAudio.addEventListener('ended', handleEnded);
       currentAudio.addEventListener('play', handlePlay);
       currentAudio.addEventListener('pause', handlePause);
-      currentAudio.addEventListener('canplaythrough', handleCanPlayThrough); // Додаємо слухач для події готовності
+      currentAudio.addEventListener('canplaythrough', handleCanPlayThrough);
+      
+      // Reset state when audioSrc changes
+      setIsPlaying(false);
+      setIsReady(false);
+      currentAudio.load(); // Explicitly load the new source
     }
 
     return () => {
@@ -49,15 +54,14 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
         currentAudio.removeEventListener('play', handlePlay);
         currentAudio.removeEventListener('pause', handlePause);
         currentAudio.removeEventListener('canplaythrough', handleCanPlayThrough);
-        currentAudio.pause(); // Зупиняємо аудіо при розмонтуванні компонента
+        currentAudio.pause();
         currentAudio.currentTime = 0;
-        setIsReady(false); // Скидаємо стан готовності при розмонтуванні
       }
     };
-  }, [audioSrc]); // Перезапускаємо ефект, якщо змінюється джерело аудіо
+  }, [audioSrc]);
 
   const togglePlayPause = () => {
-    if (audioRef.current && isReady) { // Відтворюємо лише якщо аудіо готове
+    if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
@@ -65,19 +69,17 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
           console.error(`Error playing audio for ${qId}:`, error);
         });
       }
-    } else if (!isReady) {
-      console.warn(`Audio for ${qId} not ready to play yet.`);
     }
   };
 
   const handleInputFocus = () => {
-    if (audioRef.current && !isTutorialActive && isReady) { // Спроба автозапуску лише якщо аудіо готове
+    if (audioRef.current && !isTutorialActive) {
       const hasPlayed = localStorage.getItem(localStorageKey) === 'true';
       if (!hasPlayed) {
         audioRef.current.play().then(() => {
           localStorage.setItem(localStorageKey, 'true');
         }).catch(error => {
-          console.warn(`Autoplay prevented for ${qId}:`, error);
+          console.warn(`Autoplay prevented for ${qId} on focus:`, error);
         });
       }
     }
@@ -90,7 +92,6 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
           onClick={togglePlayPause}
           className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors duration-200 mr-3 flex-shrink-0"
           aria-label={isPlaying ? "Пауза" : "Відтворити"}
-          disabled={!isReady} // Вимикаємо кнопку, якщо аудіо не готове
         >
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
         </button>
@@ -102,7 +103,7 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          onFocus={handleInputFocus} // Відтворення аудіо при фокусі
+          onFocus={handleInputFocus}
           className="w-full bg-gray-900 border-2 border-gray-600 text-white p-2.5 font-sans text-base min-h-[80px] resize-y focus:border-purple-500 focus:ring-purple-500 outline-none"
         />
       ) : (
@@ -112,7 +113,7 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          onFocus={handleInputFocus} // Відтворення аудіо при фокусі
+          onFocus={handleInputFocus}
           className="w-full bg-gray-900 border-2 border-gray-600 text-white p-2.5 font-sans text-base focus:border-purple-500 focus:ring-purple-500 outline-none"
         />
       )}
