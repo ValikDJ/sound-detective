@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Answers, TutorialStep } from './types';
 import { TUTORIAL_STEPS } from './constants';
@@ -9,6 +8,7 @@ import Modal from './components/Modal';
 import ConfirmationModal from './components/ConfirmationModal';
 import Tutorial from './components/Tutorial';
 import HelpButton from './components/HelpButton';
+import CompletionModal from './components/CompletionModal'; // Додано імпорт
 
 const App: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
@@ -21,12 +21,14 @@ const App: React.FC = () => {
 
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorialStepIndex, setTutorialStepIndex] = useState(0);
+  const [showCompletionModal, setShowCompletionModal] = useState(false); // Новий стан для модального вікна завершення
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setActiveStep(null);
         setShowConfirmation(false);
+        setShowCompletionModal(false); // Додано закриття модального вікна завершення
       }
     };
     window.addEventListener('keydown', handleEsc);
@@ -90,8 +92,9 @@ const App: React.FC = () => {
     link.click();
     document.body.removeChild(link);
     
-    alert("Файл завантажено! Тепер можна переходити до наступного кроку.");
+    // Замість alert, показуємо нове модальне вікно завершення
     setShowConfirmation(false);
+    setShowCompletionModal(true);
   };
   
   const tutorialStepsWithActions: TutorialStep[] = [
@@ -173,6 +176,11 @@ const App: React.FC = () => {
       )}
 
       <HelpButton onClick={startTutorial} />
+
+      <CompletionModal 
+        isOpen={showCompletionModal}
+        onClose={() => setShowCompletionModal(false)}
+      />
     </div>
   );
 };
