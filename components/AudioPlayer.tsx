@@ -14,16 +14,24 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
 
   useEffect(() => {
     const hasPlayedAutomatically = localStorage.getItem(localStorageKey) === 'true';
+    console.log(`AudioPlayer: ${title} - hasPlayedAutomatically: ${hasPlayedAutomatically}`);
 
     if (!hasPlayedAutomatically && audioRef.current) {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-        localStorage.setItem(localStorageKey, 'true'); // Встановлюємо прапорець тільки при успішному відтворенні
-      }).catch(error => {
-        console.warn(`Autoplay prevented for ${src}:`, error);
-        setIsPlaying(false);
-        // Не встановлюємо прапорець у localStorage, якщо відтворення було заблоковано
-      });
+      console.log(`AudioPlayer: Attempting to play ${src}`);
+      // Додаємо невелику затримку, щоб браузер краще розпізнав жест користувача
+      setTimeout(() => {
+        if (audioRef.current) { // Перевіряємо ref ще раз, оскільки компонент міг бути розмонтований
+          audioRef.current.play().then(() => {
+            setIsPlaying(true);
+            localStorage.setItem(localStorageKey, 'true'); // Встановлюємо прапорець тільки при успішному відтворенні
+            console.log(`AudioPlayer: Successfully played ${src}`);
+          }).catch(error => {
+            console.warn(`AudioPlayer: Autoplay prevented for ${src}:`, error);
+            setIsPlaying(false);
+            // Не встановлюємо прапорець у localStorage, якщо відтворення було заблоковано
+          });
+        }
+      }, 0); // Затримка в 0 мс, щоб відкласти виконання до наступного циклу подій
     }
 
     const handleEnded = () => setIsPlaying(false);
@@ -46,7 +54,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
         currentAudio.currentTime = 0; // Reset audio to start
       }
     };
-  }, [src, localStorageKey]);
+  }, [src, localStorageKey, title]); // Додано title до залежностей для логування
 
   const togglePlayPause = () => {
     if (audioRef.current) {
