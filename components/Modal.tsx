@@ -13,7 +13,7 @@ interface ModalProps {
   answers: Answers;
   onUpdateAnswer: (questionId: string, value: string) => void;
   onDownload: () => void;
-  isTutorialActive: boolean; // Додано новий пропс
+  isTutorialActive: boolean; 
 }
 
 const STEPS_CONFIG = [
@@ -85,7 +85,7 @@ const Modal: React.FC<ModalProps> = ({ activeStep, onClose, onNavigate, answers,
               localStorageKey={currentAudio.localStorageKey}
               title={currentAudio.title}
               isSmallAndCentered={true}
-              isTutorialActive={isTutorialActive} {/* Передаємо isTutorialActive */}
+              isTutorialActive={isTutorialActive} 
             />
           )}
           <button 
