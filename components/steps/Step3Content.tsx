@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Answers } from '../../types';
 import { Play, Pause } from 'lucide-react';
+import { getAssetPath } from '../../utils/assetPath'; // Імпортуємо утиліту
 
 interface Step3ContentProps {
   answers: Answers;
@@ -125,7 +126,7 @@ const Step3Content: React.FC<Step3ContentProps> = ({ answers, onUpdateAnswer, on
   return (
     <div>
       <div className="flex justify-center mb-6">
-        <img src="/ezgif-114884ef5a0190.gif" alt="Keep going" className="w-16 h-auto rounded-lg shadow-lg" />
+        <img src={getAssetPath("/ezgif-114884ef5a0190.gif")} alt="Keep going" className="w-16 h-auto rounded-lg shadow-lg" />
       </div>
       <p className="text-lg leading-relaxed text-gray-400 mb-5 border-l-4 border-purple-600 pl-4">
         Чудова робота! Ти зібрав усі докази. Тепер час заповнити звіт детектива. Дай відповіді на питання нижче, щоб описати мультик, який ти "почув". <span className="block font-bold text-yellow-400 mt-2">Коли закінчиш, натисни кнопку "Завантажити звіт" внизу сторінки.</span>
@@ -148,11 +149,11 @@ const Step3Content: React.FC<Step3ContentProps> = ({ answers, onUpdateAnswer, on
       )}
 
       <div className="mt-5">
-        <AnswerItem qId="q1" label="1. 📝 Вкажи назву мультфільму та посилання (якщо є):" placeholder="Наприклад: Мультфільм про смішного кота" value={answers.q1} onChange={handleChange} audioSrc="/audio/question_1.mp3" isTutorialActive={isTutorialActive} />
-        <AnswerItem qId="q2" label="2. 🔊 Які звуки ти почув? (перелічи якомога більше)" placeholder="Наприклад: сміх, кроки, музика, спів пташок, шум вітру..." value={answers.q2} onChange={handleChange} isTextarea audioSrc="/audio/question_2.mp3" isTutorialActive={isTutorialActive} />
-        <AnswerItem qId="q3" label="3. 😊 Які емоції викликали ці звуки?" placeholder="Наприклад: мені було весело, коли..., або трохи сумно, тому що..." value={answers.q3} onChange={handleChange} audioSrc="/audio/question_3.mp3" isTutorialActive={isTutorialActive} />
-        <AnswerItem qId="q4" label="4. 📖 Як звуки допомагали зрозуміти, що відбувається?" placeholder="Наприклад: гучна музика означала, що зараз щось станеться..." value={answers.q4} onChange={handleChange} isTextarea audioSrc="/audio/question_4.mp3" isTutorialActive={isTutorialActive} />
-        <AnswerItem qId="q5" label="5. ⭐ Який звук тобі сподобався найбільше і чому?" placeholder="Наприклад: звук дощу, бо він мене заспокоює." value={answers.q5} onChange={handleChange} isTextarea audioSrc="/audio/question_5.mp3" isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q1" label="1. 📝 Вкажи назву мультфільму та посилання (якщо є):" placeholder="Наприклад: Мультфільм про смішного кота" value={answers.q1} onChange={handleChange} audioSrc={getAssetPath("/audio/question_1.mp3")} isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q2" label="2. 🔊 Які звуки ти почув? (перелічи якомога більше)" placeholder="Наприклад: сміх, кроки, музика, спів пташок, шум вітру..." value={answers.q2} onChange={handleChange} isTextarea audioSrc={getAssetPath("/audio/question_2.mp3")} isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q3" label="3. 😊 Які емоції викликали ці звуки?" placeholder="Наприклад: мені було весело, коли..., або трохи сумно, тому що..." value={answers.q3} onChange={handleChange} audioSrc={getAssetPath("/audio/question_3.mp3")} isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q4" label="4. 📖 Як звуки допомагали зрозуміти, що відбувається?" placeholder="Наприклад: гучна музика означала, що зараз щось станеться..." value={answers.q4} onChange={handleChange} isTextarea audioSrc={getAssetPath("/audio/question_4.mp3")} isTutorialActive={isTutorialActive} />
+        <AnswerItem qId="q5" label="5. ⭐ Який звук тобі сподобався найбільше і чому?" placeholder="Наприклад: звук дощу, бо він мене заспокоює." value={answers.q5} onChange={handleChange} isTextarea audioSrc={getAssetPath("/audio/question_5.mp3")} isTutorialActive={isTutorialActive} />
       </div>
 
       <button

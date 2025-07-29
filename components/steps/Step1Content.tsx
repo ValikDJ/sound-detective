@@ -1,4 +1,5 @@
 import React from 'react';
+import { getAssetPath } from '../../utils/assetPath'; // Імпортуємо утиліту
 
 const CartoonLink: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => (
   <a 
@@ -15,7 +16,7 @@ const Step1Content: React.FC = () => {
   return (
     <div>
       <div className="flex justify-center mb-6">
-        <img src="/ezgif-16f88ebd834f7e.gif" alt="Watching cartoon" className="w-16 h-auto rounded-lg shadow-lg" />
+        <img src={getAssetPath("/ezgif-16f88ebd834f7e.gif")} alt="Watching cartoon" className="w-16 h-auto rounded-lg shadow-lg" />
       </div>
       <p className="text-lg leading-relaxed text-gray-400 mb-5 border-l-4 border-purple-600 pl-4">
         На цьому етапі твоє завдання — просто розслабитись і подивитись мультфільм. Ти можеш обрати один із запропонованих нижче або будь-який інший, який тобі до вподоби.

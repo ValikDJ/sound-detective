@@ -5,6 +5,7 @@ import Step2Content from './steps/Step2Content';
 import Step3Content from './steps/Step3Content';
 import Step4Content from './steps/Step4Content';
 import AudioPlayer from './AudioPlayer';
+import { getAssetPath } from '../utils/assetPath'; // Імпортуємо утиліту
 
 interface ModalProps {
   activeStep: number | null;
@@ -24,10 +25,10 @@ const STEPS_CONFIG = [
 ];
 
 const AUDIO_CONFIG: { [key: number]: { src: string; localStorageKey: string; title: string } } = {
-  1: { src: "/audio/krok1.mp3", localStorageKey: "krok1_audio_played_auto", title: "Аудіо для Кроку 1" },
-  2: { src: "/audio/krok2.mp3", localStorageKey: "krok2_audio_played_auto", title: "Аудіо для Кроку 2" },
-  3: { src: "/audio/krok3.mp3", localStorageKey: "krok3_audio_played_auto", title: "Аудіо для Кроку 3" },
-  4: { src: "/audio/krok4.mp3", localStorageKey: "krok4_audio_played_auto", title: "Аудіо для Кроку 4" },
+  1: { src: getAssetPath("/audio/krok1.mp3"), localStorageKey: "krok1_audio_played_auto", title: "Аудіо для Кроку 1" },
+  2: { src: getAssetPath("/audio/krok2.mp3"), localStorageKey: "krok2_audio_played_auto", title: "Аудіо для Кроку 2" },
+  3: { src: getAssetPath("/audio/krok3.mp3"), localStorageKey: "krok3_audio_played_auto", title: "Аудіо для Кроку 3" },
+  4: { src: getAssetPath("/audio/krok4.mp3"), localStorageKey: "krok4_audio_played_auto", title: "Аудіо для Кроку 4" },
 };
 
 const Modal: React.FC<ModalProps> = ({ activeStep, onClose, onNavigate, answers, onUpdateAnswer, onDownload, isTutorialActive }) => {

@@ -9,6 +9,7 @@ import ConfirmationModal from './components/ConfirmationModal';
 import Tutorial from './components/Tutorial';
 import HelpButton from './components/HelpButton';
 import CompletionModal from './components/CompletionModal';
+import { getAssetPath } from './utils/assetPath'; // Імпортуємо утиліту
 
 const App: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
@@ -39,7 +40,7 @@ const App: React.FC = () => {
     // Play intro audio once
     const introAudioPlayed = localStorage.getItem('introAudioPlayed');
     if (!introAudioPlayed) {
-      const audio = new Audio('/audio/intro.mp3');
+      const audio = new Audio(getAssetPath('/audio/intro.mp3')); // Використовуємо getAssetPath
       audio.play()
         .then(() => {
           localStorage.setItem('introAudioPlayed', 'true');
