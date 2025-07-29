@@ -17,8 +17,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
     const hasPlayedAutomatically = localStorage.getItem(localStorageKey) === 'true';
     console.log(`AudioPlayer: ${title} - hasPlayedAutomatically: ${hasPlayedAutomatically}, isTutorialActive: ${isTutorialActive}`);
 
-    // Автоматичне відтворення лише якщо не відтворювалося раніше
-    if (!hasPlayedAutomatically && audioRef.current) { // Змінено: видалено !isTutorialActive
+    // Автоматичне відтворення лише якщо не відтворювалося раніше І туторіал не активний
+    if (!hasPlayedAutomatically && audioRef.current && !isTutorialActive) { // Повернуто !isTutorialActive
       console.log(`AudioPlayer: Attempting to play ${src} automatically.`);
       // Додаємо невелику затримку, щоб браузер краще розпізнав жест користувача
       setTimeout(() => {
@@ -34,7 +34,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
         }
       }, 0);
     }
-    // Видалено else if (isTutorialActive) блок, оскільки він більше не потрібен
 
     const handleEnded = () => setIsPlaying(false);
     const handlePlay = () => setIsPlaying(true);
@@ -56,7 +55,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title, 
         currentAudio.currentTime = 0;
       }
     };
-  }, [src, localStorageKey, title, isTutorialActive]); // isTutorialActive залишається в залежностях, хоча прямо не використовується в умові autoplay
+  }, [src, localStorageKey, title, isTutorialActive]);
 
   const togglePlayPause = () => {
     if (audioRef.current) {
