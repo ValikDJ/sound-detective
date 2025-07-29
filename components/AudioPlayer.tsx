@@ -17,10 +17,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, localStorageKey, title }
     if (!hasPlayedAutomatically && audioRef.current) {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
+        // Set localStorage only on successful play to ensure it truly played
         localStorage.setItem(localStorageKey, 'true');
       }).catch(error => {
         console.warn(`Autoplay prevented for ${src}:`, error);
         setIsPlaying(false);
+        // Even if autoplay is prevented, mark it as attempted for this session
+        // so it doesn't try again automatically on subsequent openings.
+        localStorage.setItem(localStorageKey, 'true'); 
       });
     }
 
