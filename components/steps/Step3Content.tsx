@@ -23,18 +23,24 @@ interface AnswerItemProps {
 const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value, onChange, isTextarea, audioSrc, isTutorialActive }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isReady, setIsReady] = useState(false); // Новий стан для аудіо в AnswerItem
   const localStorageKey = `question_audio_played_${qId}`;
 
   useEffect(() => {
+    const currentAudio = audioRef.current;
+
     const handleEnded = () => setIsPlaying(false);
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
+    const handleCanPlayThrough = () => {
+      setIsReady(true); // Аудіо готове до відтворення
+    };
 
-    const currentAudio = audioRef.current;
     if (currentAudio) {
       currentAudio.addEventListener('ended', handleEnded);
       currentAudio.addEventListener('play', handlePlay);
       currentAudio.addEventListener('pause', handlePause);
+      currentAudio.addEventListener('canplaythrough', handleCanPlayThrough); // Додаємо слухач для події готовності
     }
 
     return () => {
@@ -42,14 +48,16 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
         currentAudio.removeEventListener('ended', handleEnded);
         currentAudio.removeEventListener('play', handlePlay);
         currentAudio.removeEventListener('pause', handlePause);
+        currentAudio.removeEventListener('canplaythrough', handleCanPlayThrough);
         currentAudio.pause(); // Зупиняємо аудіо при розмонтуванні компонента
         currentAudio.currentTime = 0;
+        setIsReady(false); // Скидаємо стан готовності при розмонтуванні
       }
     };
   }, [audioSrc]); // Перезапускаємо ефект, якщо змінюється джерело аудіо
 
   const togglePlayPause = () => {
-    if (audioRef.current) {
+    if (audioRef.current && isReady) { // Відтворюємо лише якщо аудіо готове
       if (isPlaying) {
         audioRef.current.pause();
       } else {
@@ -57,11 +65,13 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
           console.error(`Error playing audio for ${qId}:`, error);
         });
       }
+    } else if (!isReady) {
+      console.warn(`Audio for ${qId} not ready to play yet.`);
     }
   };
 
   const handleInputFocus = () => {
-    if (audioRef.current && !isTutorialActive) {
+    if (audioRef.current && !isTutorialActive && isReady) { // Спроба автозапуску лише якщо аудіо готове
       const hasPlayed = localStorage.getItem(localStorageKey) === 'true';
       if (!hasPlayed) {
         audioRef.current.play().then(() => {
@@ -80,6 +90,7 @@ const AnswerItem: React.FC<AnswerItemProps> = ({ qId, label, placeholder, value,
           onClick={togglePlayPause}
           className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors duration-200 mr-3 flex-shrink-0"
           aria-label={isPlaying ? "Пауза" : "Відтворити"}
+          disabled={!isReady} // Вимикаємо кнопку, якщо аудіо не готове
         >
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
         </button>
