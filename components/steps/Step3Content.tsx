@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { Answers } from '../../types';
+import AudioPlayer from '../AudioPlayer';
 
 interface Step3ContentProps {
   answers: Answers;
@@ -41,10 +41,10 @@ const Step3Content: React.FC<Step3ContentProps> = ({ answers, onUpdateAnswer, on
       <p className="text-lg leading-relaxed text-gray-400 mb-5 border-l-4 border-purple-600 pl-4">
         Чудова робота! Ти зібрав усі докази. Тепер час заповнити звіт детектива. Дай відповіді на питання нижче, щоб описати мультик, який ти "почув".
       </p>
-      
+      <AudioPlayer src="/audio/krok3.mp3" localStorageKey="krok3_audio_played_auto" title="Аудіо для Кроку 3" />
       <button 
         onClick={() => setShowHint(!showHint)}
-        className="bg-none border border-yellow-400 text-yellow-400 py-2 px-4 cursor-pointer font-bold transition-all duration-200 ease-in-out hover:bg-yellow-400 hover:text-gray-900 animate-pulse-yellow hover:animate-none"
+        className="bg-none border border-yellow-400 text-yellow-400 py-2 px-4 cursor-pointer font-bold transition-all duration-200 ease-in-out hover:bg-yellow-400 hover:text-gray-900 animate-pulse-yellow hover:animate-none mt-5"
       >
         💡 {showHint ? 'Сховати приклад' : 'Показати повний приклад'}
       </button>
