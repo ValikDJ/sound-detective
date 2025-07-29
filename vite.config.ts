@@ -11,7 +11,8 @@ export default defineConfig(({ mode }) => {
       },
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '.'),
+          '@': path.resolve(__dirname, './src'), // Змінено для коректного використання @/
+          '@utils': path.resolve(__dirname, './src/utils') // Додано псевдонім для @utils
         }
       }
     };
