@@ -1,0 +1,5 @@
+{
+  "name": "Sound Detective",
+  "description": "A web application to help users analyze and describe the sounds in a cartoon through a guided four-step process, translated from a vanilla JS implementation to React.",
+  "requestFramePermissions": []
+}
